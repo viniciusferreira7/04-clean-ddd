@@ -1,9 +1,10 @@
+import type { UniqueEntityId } from '../../core/entities/value-object/unique-entity-id'
 import { Answer } from '../entities/answer'
 import type { AnswerRepository } from '../repositories/anwer-repository'
 
 interface AnswerQuestionUseCaseRequest {
-  instructorId: string
-  questionId: string
+  instructorId: UniqueEntityId
+  questionId: UniqueEntityId
   content: string
 }
 
