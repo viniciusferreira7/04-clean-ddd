@@ -3,51 +3,54 @@ import type { UniqueEntityId } from '@/core/entities/value-object/unique-entity-
 import type { Optional } from '@/core/types/optional'
 
 interface AnswerProps {
-  authorId: UniqueEntityId,
+  authorId: UniqueEntityId
   questionId: UniqueEntityId
-  content: string,
+  content: string
   createdAt: Date
   updatedAt?: Date
 }
 
 export class Answer extends Entity<AnswerProps> {
-  get authorId(){
+  get authorId() {
     return this.props.authorId
   }
 
-  get questionId(){
+  get questionId() {
     return this.props.questionId
   }
 
-  get content(){
+  get content() {
     return this.props.content
   }
 
-  get createdAt(){
+  get createdAt() {
     return this.props.createdAt
   }
 
-  get updatedAt(){
+  get updatedAt() {
     return this.props.updatedAt
   }
 
-  get except(){
+  get except() {
     return this.props.content.substring(0, 120).trimEnd().concat('...')
   }
 
-  private touch(){
+  private touch() {
     this.props.updatedAt = new Date()
   }
 
-  set content(content: string){
+  set content(content: string) {
     this.props.content = content
 
     this.touch()
   }
 
-   static create(props: Optional<AnswerProps, 'createdAt'>, id?: UniqueEntityId){
-      const answer = new Answer({...props, createdAt: new Date()}, id)
-  
-      return answer
-    }
+  static create(
+    props: Optional<AnswerProps, 'createdAt'>,
+    id?: UniqueEntityId,
+  ) {
+    const answer = new Answer({ ...props, createdAt: new Date() }, id)
+
+    return answer
+  }
 }

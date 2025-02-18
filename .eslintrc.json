@@ -1,0 +1,18 @@
+{
+  "extends": ["@rocketseat/eslint-config/node", "plugin:vitest-globals/recommended"],
+  "plugins": ["eslint-plugin-simple-import-sort"],
+  "env": {
+    "vitest-globals/env": true
+  },
+  "rules": {
+    "simple-import-sort/imports": "error",
+    "no-useless-constructor": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ]
+  }
+}

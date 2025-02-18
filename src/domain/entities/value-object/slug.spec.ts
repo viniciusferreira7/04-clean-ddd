@@ -1,4 +1,4 @@
-import { Slug } from './slug';
+import { Slug } from './slug'
 
 describe('Slug', () => {
   it('should be able to create a new slug from text', () => {
