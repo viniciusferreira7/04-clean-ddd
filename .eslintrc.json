@@ -5,8 +5,16 @@
     "vitest-globals/env": true
   },
   "rules": {
+    "@typescript-eslint/adjacent-overload-signatures": "off",
     "simple-import-sort/imports": "error",
     "no-useless-constructor": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
     "no-unused-vars": [
       "error",
       {

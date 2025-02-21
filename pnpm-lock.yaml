@@ -19,7 +19,7 @@ importers:
         specifier: ^18.15.11
         version: 18.19.76
       eslint:
-        specifier: ^8.39.0
+        specifier: '8'
         version: 8.57.1
       eslint-plugin-simple-import-sort:
         specifier: ^12.1.1
@@ -1238,8 +1238,8 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
-  postcss@8.5.2:
-    resolution: {integrity: sha512-MjOadfU3Ys9KYoX0AdkBlFEF1Vx37uCCeN4ZHnmwm9FfpbsGWMZeBLMmmpY+6Ocqod7mkdZ0DT31OlbsFrLlkA==}
+  postcss@8.5.3:
+    resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
   prelude-ls@1.2.1:
@@ -3031,7 +3031,7 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss@8.5.2:
+  postcss@8.5.3:
     dependencies:
       nanoid: 3.3.8
       picocolors: 1.1.1
@@ -3396,7 +3396,7 @@ snapshots:
   vite@4.5.9(@types/node@18.19.76):
     dependencies:
       esbuild: 0.18.20
-      postcss: 8.5.2
+      postcss: 8.5.3
       rollup: 3.29.5
     optionalDependencies:
       '@types/node': 18.19.76

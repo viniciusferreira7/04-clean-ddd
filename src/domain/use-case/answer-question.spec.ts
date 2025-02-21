@@ -3,7 +3,8 @@ import type { AnswerRepository } from '../repositories/anwer-repository'
 import { AnswerQuestionUseCase } from './answer-question'
 
 const fakerAnswerRepository: AnswerRepository = {
-  create: async (answer: Answer) => {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  create: async (_answer: Answer) => {},
 }
 
 test('Create an answer', async () => {
