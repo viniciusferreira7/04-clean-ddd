@@ -12,7 +12,7 @@ describe('Create answer', () => {
   })
 
   it('should be able to create an answer', async () => {
-    const answer = await sut.execute({
+    const { answer } = await sut.execute({
       instructorId: '1',
       questionId: '1',
       content: 'New answer',
