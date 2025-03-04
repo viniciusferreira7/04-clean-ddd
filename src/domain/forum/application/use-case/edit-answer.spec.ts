@@ -1,0 +1,81 @@
+import { makeAnswer } from 'test/factories/make-answer'
+import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answer-repository'
+
+import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
+
+import { EditAnswerUseCase } from './edit-answer'
+
+let inMemoryAnswerRepository: InMemoryAnswerRepository
+let sut: EditAnswerUseCase
+
+describe('Edit answer', () => {
+  beforeEach(() => {
+    inMemoryAnswerRepository = new InMemoryAnswerRepository()
+    sut = new EditAnswerUseCase(inMemoryAnswerRepository)
+  })
+
+  it('should be able to edit a answer', async () => {
+    const authorId = new UniqueEntityId()
+    const answerId = 'answer-1'
+
+    const newAnswer = makeAnswer(
+      {
+        authorId,
+      },
+      new UniqueEntityId(answerId),
+    )
+
+    await inMemoryAnswerRepository.create(newAnswer)
+
+    await sut.execute({
+      authorId: authorId.toString(),
+      answerId,
+      content: 'Edited content',
+    })
+
+    expect(
+      inMemoryAnswerRepository.items.some((item) => {
+        const isSameAuthorId = item.authorId === authorId
+        const isSameAnswerId = item.id.toString() === answerId
+        const isSameContentId = item.content === 'Edited content'
+
+        return isSameAuthorId && isSameAnswerId && isSameContentId
+      }),
+    ).toBeTruthy()
+
+    expect(inMemoryAnswerRepository.items[0]).toMatchObject({
+      content: 'Edited content',
+    })
+  })
+
+  it('should not be able to edit answer with wrong id', async () => {
+    await expect(() =>
+      sut.execute({
+        authorId: new UniqueEntityId().toString(),
+        answerId: 'non-id-answer',
+        content: 'Edited content',
+      }),
+    ).rejects.toBeInstanceOf(Error)
+  })
+
+  it('should not be able to edit answer where user is not creator of answer`', async () => {
+    const answerId = 'answer-1'
+
+    const newAnswer = makeAnswer(
+      {
+        authorId: new UniqueEntityId('author-1'),
+      },
+      new UniqueEntityId(answerId),
+    )
+
+    await inMemoryAnswerRepository.create(newAnswer)
+
+    await expect(() =>
+      sut.execute({
+        authorId: 'author-2',
+        answerId,
+        content: 'Edited content',
+      }),
+    ).rejects.toBeInstanceOf(Error)
+  })
+})
