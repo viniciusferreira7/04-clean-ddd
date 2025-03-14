@@ -1,0 +1,69 @@
+import { makeQuestionComment } from 'test/factories/make-question-comment'
+import { InMemoryQuestionCommentRepository } from 'test/repositories/in-memory-question-comment-repository'
+import { expect } from 'vitest'
+
+import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
+
+import { FetchQuestionCommentsUseCase } from './fetch-question-comments'
+
+let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
+let sut: FetchQuestionCommentsUseCase
+
+describe('Fetch question comments', () => {
+  beforeEach(async () => {
+    inMemoryQuestionCommentRepository = new InMemoryQuestionCommentRepository()
+    sut = new FetchQuestionCommentsUseCase(inMemoryQuestionCommentRepository)
+  })
+
+  it('should be able to fetch question comments', async () => {
+    const questionId = new UniqueEntityId('question-1')
+
+    await inMemoryQuestionCommentRepository.create(
+      makeQuestionComment({
+        questionId,
+      }),
+    )
+    await inMemoryQuestionCommentRepository.create(
+      makeQuestionComment({
+        questionId,
+      }),
+    )
+    await inMemoryQuestionCommentRepository.create(
+      makeQuestionComment({
+        questionId,
+      }),
+    )
+
+    const { questionComments } = await sut.execute({
+      questionId: questionId.toString(),
+      page: 1,
+    })
+    expect(questionComments).toHaveLength(3)
+    expect(
+      questionComments.every((item) => item.questionId === questionId),
+    ).toBeTruthy()
+  })
+
+  it('should be able to fetch paginated question comments', async () => {
+    const questionId = new UniqueEntityId('question-1')
+
+    for (let i = 0; i < 22; i++) {
+      await inMemoryQuestionCommentRepository.create(
+        makeQuestionComment({
+          questionId,
+        }),
+      )
+    }
+
+    const { questionComments } = await sut.execute({
+      questionId: questionId.toString(),
+      page: 2,
+    })
+
+    expect(questionComments).toHaveLength(2)
+
+    expect(
+      questionComments.every((item) => item.questionId === questionId),
+    ).toBeTruthy()
+  })
+})
