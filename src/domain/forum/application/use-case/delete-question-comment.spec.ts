@@ -4,6 +4,8 @@ import { InMemoryQuestionCommentRepository } from 'test/repositories/in-memory-q
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { DeleteQuestionCommentUseCase } from './delete-question-comment'
+import { NotAllowedError } from './erros/not-allowed-error'
+import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
 let sut: DeleteQuestionCommentUseCase
@@ -27,11 +29,12 @@ describe('Delete question comment', () => {
 
     await inMemoryQuestionCommentRepository.create(newQuestion)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: authorId.toString(),
       questionCommentId,
     })
 
+    expect(result.isRight()).toBeTruthy()
     expect(
       inMemoryQuestionCommentRepository.items.every(
         (item) => item.id.toString() !== questionCommentId,
@@ -42,12 +45,13 @@ describe('Delete question comment', () => {
   })
 
   it('should not be able to delete question comment with wrong id', async () => {
-    await expect(() =>
-      sut.execute({
-        authorId: new UniqueEntityId().toString(),
-        questionCommentId: 'non-id-question-comment',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: new UniqueEntityId().toString(),
+      questionCommentId: 'non-id-question-comment',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to delete question comment where user is not creator of question`', async () => {
@@ -62,11 +66,13 @@ describe('Delete question comment', () => {
 
     await inMemoryQuestionCommentRepository.create(newQuestionComment)
 
-    await expect(() =>
-      sut.execute({
-        authorId: 'author-2',
-        questionCommentId,
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: 'author-2',
+      questionCommentId,
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

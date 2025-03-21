@@ -4,6 +4,8 @@ import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answer-rep
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { EditAnswerUseCase } from './edit-answer'
+import { NotAllowedError } from './erros/not-allowed-error'
+import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryAnswerRepository: InMemoryAnswerRepository
 let sut: EditAnswerUseCase
@@ -27,12 +29,13 @@ describe('Edit answer', () => {
 
     await inMemoryAnswerRepository.create(newAnswer)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: authorId.toString(),
       answerId,
       content: 'Edited content',
     })
 
+    expect(result.isRight()).toBeTruthy()
     expect(
       inMemoryAnswerRepository.items.some((item) => {
         const isSameAuthorId = item.authorId === authorId
@@ -49,13 +52,14 @@ describe('Edit answer', () => {
   })
 
   it('should not be able to edit answer with wrong id', async () => {
-    await expect(() =>
-      sut.execute({
-        authorId: new UniqueEntityId().toString(),
-        answerId: 'non-id-answer',
-        content: 'Edited content',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: new UniqueEntityId().toString(),
+      answerId: 'non-id-answer',
+      content: 'Edited content',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to edit answer where user is not creator of answer`', async () => {
@@ -70,12 +74,13 @@ describe('Edit answer', () => {
 
     await inMemoryAnswerRepository.create(newAnswer)
 
-    await expect(() =>
-      sut.execute({
-        authorId: 'author-2',
-        answerId,
-        content: 'Edited content',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: 'author-2',
+      answerId,
+      content: 'Edited content',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

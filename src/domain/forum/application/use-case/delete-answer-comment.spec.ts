@@ -29,11 +29,12 @@ describe('Delete answer comment', () => {
 
     await inMemoryAnswerCommentRepository.create(newAnswer)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: authorId.toString(),
       answerCommentId,
     })
 
+    expect(result.isRight()).toBeTruthy()
     expect(
       inMemoryAnswerCommentRepository.items.every(
         (item) => item.id.toString() !== answerCommentId,

@@ -1,10 +1,10 @@
-import { type Either, right } from '@/core/either'
+import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { QuestionComment } from '../../enterprise/entities/question-comment'
 import type { QuestionCommentRepository } from '../repositories/question-comment-repository'
 import type { QuestionRepository } from '../repositories/question-repository'
-import type { ResourceNotFoundError } from './erros/resource-not-found-error'
+import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 interface CommentOnQuestionUseCaseRequest {
   authorId: string
@@ -33,7 +33,7 @@ export class CommentOnQuestionUseCase {
     const question = await this.questionRepository.findById(questionId)
 
     if (!question) {
-      throw new Error('Question not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const questionComment = QuestionComment.create({

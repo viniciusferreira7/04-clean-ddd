@@ -5,6 +5,7 @@ import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { CommentOnQuestionUseCase } from './comment-on-question'
+import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
 let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
@@ -26,12 +27,13 @@ describe('Comment on question', () => {
 
     await inMemoryQuestionRepository.create(question)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: 'author-1',
       questionId: question.id.toString(),
       content: 'New comment',
     })
 
+    expect(result.isRight()).toBeTruthy()
     expect(
       inMemoryQuestionCommentRepository.items.some(
         (item) =>
@@ -43,12 +45,13 @@ describe('Comment on question', () => {
   })
 
   it('should not be able to comment on question with wrong question id', async () => {
-    await expect(() =>
-      sut.execute({
-        authorId: new UniqueEntityId().toString(),
-        questionId: 'non-id-question',
-        content: 'New comment',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: new UniqueEntityId().toString(),
+      questionId: 'non-id-question',
+      content: 'New comment',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

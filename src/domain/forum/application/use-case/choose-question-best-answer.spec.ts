@@ -6,6 +6,8 @@ import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { ChooseQuestionBestAnswerUseCase } from './choose-question-best-answer'
+import { NotAllowedError } from './erros/not-allowed-error'
+import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
 let inMemoryAnswerRepository: InMemoryAnswerRepository
@@ -31,11 +33,12 @@ describe('Choose question best answer', () => {
     await inMemoryQuestionRepository.create(question)
     await inMemoryAnswerRepository.create(answer)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: question.authorId.toString(),
       answerId: answer.id.toString(),
     })
 
+    expect(result.isRight()).toBeTruthy()
     expect(
       inMemoryQuestionRepository.items.some(
         (item) => item.bestAnswerId === answer.id,
@@ -44,12 +47,13 @@ describe('Choose question best answer', () => {
   })
 
   it('should not be able to chose the question best answer with wrong answer id', async () => {
-    await expect(() =>
-      sut.execute({
-        authorId: new UniqueEntityId().toString(),
-        answerId: 'non-id-question',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: new UniqueEntityId().toString(),
+      answerId: 'non-id-question',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to chose the question best answer with wrong question id', async () => {
@@ -59,12 +63,13 @@ describe('Choose question best answer', () => {
 
     await inMemoryAnswerRepository.create(answer)
 
-    await expect(() =>
-      sut.execute({
-        authorId: answer.authorId.toString(),
-        answerId: answer.id.toString(),
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: answer.authorId.toString(),
+      answerId: answer.id.toString(),
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to chose the question best answer where user is not creator of question`', async () => {
@@ -81,12 +86,13 @@ describe('Choose question best answer', () => {
       authorId: question.authorId.toString(),
       answerId: answer.id.toString(),
     })
+    const result = await sut.execute({
+      authorId: 'author-2',
+      answerId: answer.id.toString(),
+    })
 
-    await expect(() =>
-      sut.execute({
-        authorId: 'author-2',
-        answerId: answer.id.toString(),
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    expect(result.isLeft()).toBeTruthy()
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

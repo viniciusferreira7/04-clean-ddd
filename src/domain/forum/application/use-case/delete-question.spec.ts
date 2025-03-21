@@ -4,6 +4,8 @@ import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { DeleteQuestionUseCase } from './delete-question'
+import { NotAllowedError } from './erros/not-allowed-error'
+import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
 let sut: DeleteQuestionUseCase
@@ -27,27 +29,28 @@ describe('Delete question', () => {
 
     await inMemoryQuestionRepository.create(newQuestion)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: authorId.toString(),
       questionId,
     })
 
+    expect(result.isRight()).toBeTruthy()
     expect(
       inMemoryQuestionRepository.items.every(
         (item) => item.id.toString() !== questionId,
       ),
     ).toBeTruthy()
-
     expect(inMemoryQuestionRepository.items).toHaveLength(0)
   })
 
   it('should not be able to delete question with wrong id', async () => {
-    await expect(() =>
-      sut.execute({
-        authorId: new UniqueEntityId().toString(),
-        questionId: 'non-id-question',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: new UniqueEntityId().toString(),
+      questionId: 'non-id-question',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to delete question where user is not creator of question`', async () => {
@@ -62,11 +65,12 @@ describe('Delete question', () => {
 
     await inMemoryQuestionRepository.create(newQuestion)
 
-    await expect(() =>
-      sut.execute({
-        authorId: 'author-2',
-        questionId,
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: 'author-2',
+      questionId,
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

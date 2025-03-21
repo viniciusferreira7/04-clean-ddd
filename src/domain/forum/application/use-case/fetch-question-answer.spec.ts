@@ -34,12 +34,16 @@ describe('Fetch question answers', () => {
       }),
     )
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       questionId: questionId.toString(),
       page: 1,
     })
-    expect(answers).toHaveLength(3)
-    expect(answers.every((item) => item.questionId === questionId)).toBeTruthy()
+
+    expect(result.isRight()).toBeTruthy()
+    expect(result.value?.answers).toHaveLength(3)
+    expect(
+      result.value?.answers.every((item) => item.questionId === questionId),
+    ).toBeTruthy()
   })
 
   it('should be able to fetch paginated question answers', async () => {
@@ -53,13 +57,15 @@ describe('Fetch question answers', () => {
       )
     }
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       questionId: questionId.toString(),
       page: 2,
     })
 
-    expect(answers).toHaveLength(2)
-
-    expect(answers.every((item) => item.questionId === questionId)).toBeTruthy()
+    expect(result.isRight()).toBeTruthy()
+    expect(result.value?.answers).toHaveLength(2)
+    expect(
+      result.value?.answers.every((item) => item.questionId === questionId),
+    ).toBeTruthy()
   })
 })

@@ -4,6 +4,8 @@ import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { EditQuestionUseCase } from './edit-question'
+import { NotAllowedError } from './erros/not-allowed-error'
+import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
 let sut: EditQuestionUseCase
@@ -27,12 +29,14 @@ describe('Edit question', () => {
 
     await inMemoryQuestionRepository.create(newQuestion)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: authorId.toString(),
       questionId,
       title: 'Edited title',
       content: 'Edited content',
     })
+
+    expect(result.isRight()).toBeTruthy()
 
     expect(
       inMemoryQuestionRepository.items.some((item) => {
@@ -54,14 +58,15 @@ describe('Edit question', () => {
   })
 
   it('should not be able to edit question with wrong id', async () => {
-    await expect(() =>
-      sut.execute({
-        authorId: new UniqueEntityId().toString(),
-        questionId: 'non-id-question',
-        title: 'Edited title',
-        content: 'Edited content',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: new UniqueEntityId().toString(),
+      questionId: 'non-id-question',
+      title: 'Edited title',
+      content: 'Edited content',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to edit question where user is not creator of question`', async () => {
@@ -76,13 +81,14 @@ describe('Edit question', () => {
 
     await inMemoryQuestionRepository.create(newQuestion)
 
-    await expect(() =>
-      sut.execute({
-        authorId: 'author-2',
-        questionId,
-        title: 'Edited title',
-        content: 'Edited content',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: 'author-2',
+      questionId,
+      title: 'Edited title',
+      content: 'Edited content',
+    })
+
+    expect(result.isLeft()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

@@ -34,13 +34,17 @@ describe('Fetch question comments', () => {
       }),
     )
 
-    const { questionComments } = await sut.execute({
+    const result = await sut.execute({
       questionId: questionId.toString(),
       page: 1,
     })
-    expect(questionComments).toHaveLength(3)
+
+    expect(result.isRight()).toBeTruthy()
+    expect(result.value?.questionComments).toHaveLength(3)
     expect(
-      questionComments.every((item) => item.questionId === questionId),
+      result.value?.questionComments.every(
+        (item) => item.questionId === questionId,
+      ),
     ).toBeTruthy()
   })
 
@@ -55,15 +59,17 @@ describe('Fetch question comments', () => {
       )
     }
 
-    const { questionComments } = await sut.execute({
+    const result = await sut.execute({
       questionId: questionId.toString(),
       page: 2,
     })
 
-    expect(questionComments).toHaveLength(2)
-
+    expect(result.isRight()).toBeTruthy()
+    expect(result.value?.questionComments).toHaveLength(2)
     expect(
-      questionComments.every((item) => item.questionId === questionId),
+      result.value?.questionComments.every(
+        (item) => item.questionId === questionId,
+      ),
     ).toBeTruthy()
   })
 })
