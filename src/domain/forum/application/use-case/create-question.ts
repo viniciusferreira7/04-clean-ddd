@@ -3,6 +3,7 @@ import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { Question } from '../../enterprise/entities/question'
 import { QuestionAttachment } from '../../enterprise/entities/question-attachment'
+import { QuestionAttachmentList } from '../../enterprise/entities/question-attachment-list'
 import type { QuestionRepository } from '../repositories/question-repository'
 
 interface CreateQuestionUseCaseRequest {
@@ -41,7 +42,7 @@ export class CreateQuestionUseCase {
       })
     })
 
-    question.attachments = questionAttachments
+    question.attachments = new QuestionAttachmentList(questionAttachments)
 
     await this.questionRepository.create(question)
 
