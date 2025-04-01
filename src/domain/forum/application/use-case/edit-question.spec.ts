@@ -1,4 +1,6 @@
 import { makeQuestion } from 'test/factories/make-question'
+import { makeQuestionAttachment } from 'test/factories/make-question-attachment'
+import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments'
 import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
@@ -8,12 +10,19 @@ import { NotAllowedError } from './erros/not-allowed-error'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: EditQuestionUseCase
 
 describe('Edit question', () => {
   beforeEach(() => {
     inMemoryQuestionRepository = new InMemoryQuestionRepository()
-    sut = new EditQuestionUseCase(inMemoryQuestionRepository)
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+
+    sut = new EditQuestionUseCase(
+      inMemoryQuestionRepository,
+      inMemoryQuestionAttachmentsRepository,
+    )
   })
 
   it('should be able to edit a question', async () => {
@@ -27,6 +36,17 @@ describe('Edit question', () => {
       new UniqueEntityId(questionId),
     )
 
+    inMemoryQuestionAttachmentsRepository.items.push(
+      makeQuestionAttachment({
+        attachmentId: new UniqueEntityId('1'),
+        questionId: newQuestion.id,
+      }),
+      makeQuestionAttachment({
+        attachmentId: new UniqueEntityId('2'),
+        questionId: newQuestion.id,
+      }),
+    )
+
     await inMemoryQuestionRepository.create(newQuestion)
 
     const result = await sut.execute({
@@ -34,6 +54,7 @@ describe('Edit question', () => {
       questionId,
       title: 'Edited title',
       content: 'Edited content',
+      attachmentsIds: ['1', '3'],
     })
 
     expect(result.isRight()).toBeTruthy()
@@ -55,6 +76,16 @@ describe('Edit question', () => {
       title: 'Edited title',
       content: 'Edited content',
     })
+
+    expect(
+      inMemoryQuestionRepository.items[0].attachments.currentItems,
+    ).toHaveLength(2)
+    expect(
+      inMemoryQuestionRepository.items[0].attachments.currentItems,
+    ).toEqual([
+      expect.objectContaining({ attachmentId: new UniqueEntityId('1') }),
+      expect.objectContaining({ attachmentId: new UniqueEntityId('3') }),
+    ])
   })
 
   it('should not be able to edit question with wrong id', async () => {
@@ -63,6 +94,7 @@ describe('Edit question', () => {
       questionId: 'non-id-question',
       title: 'Edited title',
       content: 'Edited content',
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBeTruthy()
@@ -86,6 +118,7 @@ describe('Edit question', () => {
       questionId,
       title: 'Edited title',
       content: 'Edited content',
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBeTruthy()
