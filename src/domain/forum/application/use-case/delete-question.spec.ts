@@ -1,4 +1,6 @@
 import { makeQuestion } from 'test/factories/make-question'
+import { makeQuestionAttachment } from 'test/factories/make-question-attachment'
+import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments'
 import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
@@ -8,11 +10,16 @@ import { NotAllowedError } from './erros/not-allowed-error'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: DeleteQuestionUseCase
 
 describe('Delete question', () => {
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionRepository = new InMemoryQuestionRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
     sut = new DeleteQuestionUseCase(inMemoryQuestionRepository)
   })
 
@@ -29,6 +36,17 @@ describe('Delete question', () => {
 
     await inMemoryQuestionRepository.create(newQuestion)
 
+    inMemoryQuestionAttachmentsRepository.items.push(
+      makeQuestionAttachment({
+        attachmentId: new UniqueEntityId('1'),
+        questionId: newQuestion.id,
+      }),
+      makeQuestionAttachment({
+        attachmentId: new UniqueEntityId('2'),
+        questionId: newQuestion.id,
+      }),
+    )
+
     const result = await sut.execute({
       authorId: authorId.toString(),
       questionId,
@@ -41,6 +59,7 @@ describe('Delete question', () => {
       ),
     ).toBeTruthy()
     expect(inMemoryQuestionRepository.items).toHaveLength(0)
+    expect(inMemoryQuestionAttachmentsRepository.items).toHaveLength(0)
   })
 
   it('should not be able to delete question with wrong id', async () => {

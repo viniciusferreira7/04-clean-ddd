@@ -1,4 +1,5 @@
 import { makeQuestion } from 'test/factories/make-question'
+import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments'
 import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question-repository'
 
 import { Slug } from '../../enterprise/entities/value-object/slug'
@@ -6,11 +7,17 @@ import { ResourceNotFoundError } from './erros/resource-not-found-error'
 import { GetQuestionUseCase } from './get-question-by-slug'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
+
 let sut: GetQuestionUseCase
 
 describe('Get question by slug', () => {
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionRepository = new InMemoryQuestionRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
     sut = new GetQuestionUseCase(inMemoryQuestionRepository)
   })
 
