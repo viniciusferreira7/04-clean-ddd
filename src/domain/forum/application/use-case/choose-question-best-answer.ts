@@ -1,8 +1,8 @@
 import { type Either, left, right } from '@/core/either'
 
 import type { Question } from '../../enterprise/entities/question'
-import type { AnswerRepository } from '../repositories/answer-repository'
-import type { QuestionRepository } from '../repositories/question-repository'
+import type { AnswersRepository } from '../repositories/answers-repository'
+import type { QuestionsRepository } from '../repositories/questions-repository'
 import { NotAllowedError } from './erros/not-allowed-error'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
@@ -20,8 +20,8 @@ type ChooseQuestionBestAnswerUseCaseResponse = Either<
 
 export class ChooseQuestionBestAnswerUseCase {
   constructor(
-    private questionRepository: QuestionRepository,
-    private answerRepository: AnswerRepository,
+    private questionRepository: QuestionsRepository,
+    private answerRepository: AnswersRepository,
   ) {}
 
   async execute({

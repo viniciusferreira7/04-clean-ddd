@@ -1,7 +1,7 @@
 import { makeQuestion } from 'test/factories/make-question'
 import { makeQuestionAttachment } from 'test/factories/make-question-attachment'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments'
-import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question-repository'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
@@ -9,7 +9,7 @@ import { DeleteQuestionUseCase } from './delete-question'
 import { NotAllowedError } from './erros/not-allowed-error'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
-let inMemoryQuestionRepository: InMemoryQuestionRepository
+let inMemoryQuestionRepository: InMemoryQuestionsRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: DeleteQuestionUseCase
 
@@ -17,7 +17,7 @@ describe('Delete question', () => {
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
-    inMemoryQuestionRepository = new InMemoryQuestionRepository(
+    inMemoryQuestionRepository = new InMemoryQuestionsRepository(
       inMemoryQuestionAttachmentsRepository,
     )
     sut = new DeleteQuestionUseCase(inMemoryQuestionRepository)

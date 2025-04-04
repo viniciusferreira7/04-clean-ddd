@@ -1,7 +1,7 @@
 import { type Either, left, right } from '@/core/either'
 
 import { Question } from '../../enterprise/entities/question'
-import type { QuestionRepository } from '../repositories/question-repository'
+import type { QuestionsRepository } from '../repositories/questions-repository'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
 interface GetQuestionUseCaseRequest {
@@ -15,7 +15,7 @@ type GetQuestionUseCaseResponse = Either<
   }
 >
 export class GetQuestionUseCase {
-  constructor(private questionRepository: QuestionRepository) {}
+  constructor(private questionRepository: QuestionsRepository) {}
 
   async execute({
     slug,

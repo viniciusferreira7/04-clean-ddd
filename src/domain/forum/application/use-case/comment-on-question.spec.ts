@@ -1,27 +1,27 @@
 import { makeQuestion } from 'test/factories/make-question'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments'
-import { InMemoryQuestionCommentRepository } from 'test/repositories/in-memory-question-comment-repository'
-import { InMemoryQuestionRepository } from 'test/repositories/in-memory-question-repository'
+import { InMemoryQuestionCommentsRepository } from 'test/repositories/in-memory-question-comments-repository'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { CommentOnQuestionUseCase } from './comment-on-question'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
-let inMemoryQuestionRepository: InMemoryQuestionRepository
+let inMemoryQuestionRepository: InMemoryQuestionsRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 
-let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
+let inMemoryQuestionCommentRepository: InMemoryQuestionCommentsRepository
 let sut: CommentOnQuestionUseCase
 
 describe('Comment on question', () => {
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
-    inMemoryQuestionRepository = new InMemoryQuestionRepository(
+    inMemoryQuestionRepository = new InMemoryQuestionsRepository(
       inMemoryQuestionAttachmentsRepository,
     )
-    inMemoryQuestionCommentRepository = new InMemoryQuestionCommentRepository()
+    inMemoryQuestionCommentRepository = new InMemoryQuestionCommentsRepository()
 
     sut = new CommentOnQuestionUseCase(
       inMemoryQuestionRepository,

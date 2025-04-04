@@ -1,9 +1,9 @@
 import type { PaginationParams } from '@/core/repositories/pagination-params'
 import type { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository'
-import type { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import type { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 import type { Question } from '@/domain/forum/enterprise/entities/question'
 
-export class InMemoryQuestionRepository implements QuestionRepository {
+export class InMemoryQuestionsRepository implements QuestionsRepository {
   public items: Question[] = []
 
   constructor(

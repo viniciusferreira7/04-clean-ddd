@@ -1,5 +1,7 @@
 import { makeAnswer } from 'test/factories/make-answer'
-import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answer-repository'
+import { makeAnswerAttachment } from 'test/factories/make-answer-attachment'
+import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments'
+import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
@@ -7,13 +9,21 @@ import { EditAnswerUseCase } from './edit-answer'
 import { NotAllowedError } from './erros/not-allowed-error'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
-let inMemoryAnswerRepository: InMemoryAnswerRepository
+let inMemoryAnswerRepository: InMemoryAnswersRepository
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let sut: EditAnswerUseCase
 
 describe('Edit answer', () => {
   beforeEach(() => {
-    inMemoryAnswerRepository = new InMemoryAnswerRepository()
-    sut = new EditAnswerUseCase(inMemoryAnswerRepository)
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswerRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
+    sut = new EditAnswerUseCase(
+      inMemoryAnswerRepository,
+      inMemoryAnswerAttachmentsRepository,
+    )
   })
 
   it('should be able to edit a answer', async () => {
@@ -27,12 +37,24 @@ describe('Edit answer', () => {
       new UniqueEntityId(answerId),
     )
 
+    inMemoryAnswerAttachmentsRepository.items.push(
+      makeAnswerAttachment({
+        attachmentId: new UniqueEntityId('1'),
+        answerId: newAnswer.id,
+      }),
+      makeAnswerAttachment({
+        attachmentId: new UniqueEntityId('2'),
+        answerId: newAnswer.id,
+      }),
+    )
+
     await inMemoryAnswerRepository.create(newAnswer)
 
     const result = await sut.execute({
       authorId: authorId.toString(),
       answerId,
       content: 'Edited content',
+      attachmentsIds: ['1', '3'],
     })
 
     expect(result.isRight()).toBeTruthy()
@@ -56,6 +78,7 @@ describe('Edit answer', () => {
       authorId: new UniqueEntityId().toString(),
       answerId: 'non-id-answer',
       content: 'Edited content',
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBeTruthy()
@@ -78,6 +101,7 @@ describe('Edit answer', () => {
       authorId: 'author-2',
       answerId,
       content: 'Edited content',
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBeTruthy()

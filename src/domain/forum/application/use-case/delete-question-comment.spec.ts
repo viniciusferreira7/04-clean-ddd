@@ -1,5 +1,5 @@
 import { makeQuestionComment } from 'test/factories/make-question-comment'
-import { InMemoryQuestionCommentRepository } from 'test/repositories/in-memory-question-comment-repository'
+import { InMemoryQuestionCommentsRepository } from 'test/repositories/in-memory-question-comments-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
@@ -7,13 +7,14 @@ import { DeleteQuestionCommentUseCase } from './delete-question-comment'
 import { NotAllowedError } from './erros/not-allowed-error'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
-let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
+let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 let sut: DeleteQuestionCommentUseCase
 
 describe('Delete question comment', () => {
   beforeEach(() => {
-    inMemoryQuestionCommentRepository = new InMemoryQuestionCommentRepository()
-    sut = new DeleteQuestionCommentUseCase(inMemoryQuestionCommentRepository)
+    inMemoryQuestionCommentsRepository =
+      new InMemoryQuestionCommentsRepository()
+    sut = new DeleteQuestionCommentUseCase(inMemoryQuestionCommentsRepository)
   })
 
   it('should be able to delete question comment', async () => {
@@ -27,7 +28,7 @@ describe('Delete question comment', () => {
       new UniqueEntityId(questionCommentId),
     )
 
-    await inMemoryQuestionCommentRepository.create(newQuestion)
+    await inMemoryQuestionCommentsRepository.create(newQuestion)
 
     const result = await sut.execute({
       authorId: authorId.toString(),
@@ -36,12 +37,12 @@ describe('Delete question comment', () => {
 
     expect(result.isRight()).toBeTruthy()
     expect(
-      inMemoryQuestionCommentRepository.items.every(
+      inMemoryQuestionCommentsRepository.items.every(
         (item) => item.id.toString() !== questionCommentId,
       ),
     ).toBeTruthy()
 
-    expect(inMemoryQuestionCommentRepository.items).toHaveLength(0)
+    expect(inMemoryQuestionCommentsRepository.items).toHaveLength(0)
   })
 
   it('should not be able to delete question comment with wrong id', async () => {
@@ -64,7 +65,7 @@ describe('Delete question comment', () => {
       new UniqueEntityId(questionCommentId),
     )
 
-    await inMemoryQuestionCommentRepository.create(newQuestionComment)
+    await inMemoryQuestionCommentsRepository.create(newQuestionComment)
 
     const result = await sut.execute({
       authorId: 'author-2',

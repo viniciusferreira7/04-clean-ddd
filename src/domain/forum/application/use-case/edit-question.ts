@@ -5,7 +5,7 @@ import type { Question } from '../../enterprise/entities/question'
 import { QuestionAttachment } from '../../enterprise/entities/question-attachment'
 import { QuestionAttachmentList } from '../../enterprise/entities/question-attachment-list'
 import type { QuestionAttachmentsRepository } from '../repositories/question-attachments-repository'
-import type { QuestionRepository } from '../repositories/question-repository'
+import type { QuestionsRepository } from '../repositories/questions-repository'
 import { NotAllowedError } from './erros/not-allowed-error'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
@@ -26,7 +26,7 @@ type EditQuestionUseCaseResponse = Either<
 
 export class EditQuestionUseCase {
   constructor(
-    private questionRepository: QuestionRepository,
+    private questionRepository: QuestionsRepository,
     private questionAttachmentsRepository: QuestionAttachmentsRepository,
   ) {}
 

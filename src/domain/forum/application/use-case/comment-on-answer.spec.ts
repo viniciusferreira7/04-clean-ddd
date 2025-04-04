@@ -1,19 +1,27 @@
 import { makeAnswer } from 'test/factories/make-answer'
-import { InMemoryAnswerCommentRepository } from 'test/repositories/in-memory-answer-comment-repository'
-import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answer-repository'
+import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments'
+import { InMemoryAnswerCommentRepository } from 'test/repositories/in-memory-answer-comments-repository'
+import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { CommentOnAnswerUseCase } from './comment-on-answer'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 
-let inMemoryAnswerRepository: InMemoryAnswerRepository
+let inMemoryAnswerRepository: InMemoryAnswersRepository
 let inMemoryAnswerCommentRepository: InMemoryAnswerCommentRepository
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
+
 let sut: CommentOnAnswerUseCase
 
 describe('Comment on answer', () => {
   beforeEach(() => {
-    inMemoryAnswerRepository = new InMemoryAnswerRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswerRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
+
     inMemoryAnswerCommentRepository = new InMemoryAnswerCommentRepository()
 
     sut = new CommentOnAnswerUseCase(
