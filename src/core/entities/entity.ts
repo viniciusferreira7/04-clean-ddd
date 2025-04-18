@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UniqueEntityId } from './value-object/unique-entity-id'
 
 export abstract class Entity<Props> {

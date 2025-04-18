@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AggregateRoot } from '../entities/aggregate-root'
 import type { UniqueEntityId } from '../entities/value-object/unique-entity-id'
 import { DomainEvent } from './domain-event'
