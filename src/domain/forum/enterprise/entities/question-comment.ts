@@ -1,6 +1,7 @@
 import type { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 import type { Optional } from '@/core/types/optional'
 
+import { QuestionCommentCreatedEvent } from '../events/question-comment-created-event'
 import { Comment, type CommentProps } from './comment'
 
 export interface QuestionCommentProps extends CommentProps {
@@ -19,6 +20,13 @@ export class QuestionComment extends Comment<QuestionCommentProps> {
     const questionComment = new QuestionComment(
       { ...props, createdAt: props.createdAt ?? new Date() },
       id,
+    )
+
+    questionComment.addDomainEvent(
+      new QuestionCommentCreatedEvent(
+        questionComment,
+        questionComment.questionId,
+      ),
     )
 
     return questionComment
