@@ -1,5 +1,5 @@
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
-import { InMemoryAnswerCommentRepository } from 'test/repositories/in-memory-answer-comments-repository'
+import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answer-comments-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
@@ -7,13 +7,13 @@ import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-e
 
 import { DeleteAnswerCommentUseCase } from './delete-answer-comment'
 
-let inMemoryAnswerCommentRepository: InMemoryAnswerCommentRepository
+let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
 let sut: DeleteAnswerCommentUseCase
 
 describe('Delete answer comment', () => {
   beforeEach(() => {
-    inMemoryAnswerCommentRepository = new InMemoryAnswerCommentRepository()
-    sut = new DeleteAnswerCommentUseCase(inMemoryAnswerCommentRepository)
+    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
+    sut = new DeleteAnswerCommentUseCase(inMemoryAnswerCommentsRepository)
   })
 
   it('should be able to delete answer comment', async () => {
@@ -27,7 +27,7 @@ describe('Delete answer comment', () => {
       new UniqueEntityId(answerCommentId),
     )
 
-    await inMemoryAnswerCommentRepository.create(newAnswer)
+    await inMemoryAnswerCommentsRepository.create(newAnswer)
 
     const result = await sut.execute({
       authorId: authorId.toString(),
@@ -36,12 +36,12 @@ describe('Delete answer comment', () => {
 
     expect(result.isRight()).toBeTruthy()
     expect(
-      inMemoryAnswerCommentRepository.items.every(
+      inMemoryAnswerCommentsRepository.items.every(
         (item) => item.id.toString() !== answerCommentId,
       ),
     ).toBeTruthy()
 
-    expect(inMemoryAnswerCommentRepository.items).toHaveLength(0)
+    expect(inMemoryAnswerCommentsRepository.items).toHaveLength(0)
   })
 
   it('should not be able to delete answer comment with wrong id', async () => {
@@ -64,7 +64,7 @@ describe('Delete answer comment', () => {
       new UniqueEntityId(answerCommentId),
     )
 
-    await inMemoryAnswerCommentRepository.create(newAnswerComment)
+    await inMemoryAnswerCommentsRepository.create(newAnswerComment)
 
     const result = await sut.execute({
       authorId: 'author-2',

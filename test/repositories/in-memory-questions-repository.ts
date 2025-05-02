@@ -34,7 +34,7 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
   async create(question: Question): Promise<void> {
     this.items.push(question)
 
-    DomainEvents.dispatchEventsForAggregate(question.id)
+    DomainEvents.dispatchEventsForEntity(question.id)
   }
 
   async save(question: Question): Promise<void> {
@@ -44,7 +44,7 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
 
     if (itemIndex >= 0) {
       this.items[itemIndex] = question
-      DomainEvents.dispatchEventsForAggregate(question.id)
+      DomainEvents.dispatchEventsForEntity(question.id)
     }
   }
 

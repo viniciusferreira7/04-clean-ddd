@@ -1,6 +1,6 @@
 import { makeAnswer } from 'test/factories/make-answer'
 import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments'
-import { InMemoryAnswerCommentRepository } from 'test/repositories/in-memory-answer-comments-repository'
+import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answer-comments-repository'
 import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
@@ -9,7 +9,7 @@ import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-e
 import { CommentOnAnswerUseCase } from './comment-on-answer'
 
 let inMemoryAnswerRepository: InMemoryAnswersRepository
-let inMemoryAnswerCommentRepository: InMemoryAnswerCommentRepository
+let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 
 let sut: CommentOnAnswerUseCase
@@ -22,11 +22,11 @@ describe('Comment on answer', () => {
       inMemoryAnswerAttachmentsRepository,
     )
 
-    inMemoryAnswerCommentRepository = new InMemoryAnswerCommentRepository()
+    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
 
     sut = new CommentOnAnswerUseCase(
       inMemoryAnswerRepository,
-      inMemoryAnswerCommentRepository,
+      inMemoryAnswerCommentsRepository,
     )
   })
 
@@ -43,7 +43,7 @@ describe('Comment on answer', () => {
 
     expect(result.isRight()).toBeTruthy()
     expect(
-      inMemoryAnswerCommentRepository.items.some(
+      inMemoryAnswerCommentsRepository.items.some(
         (item) =>
           item.authorId.toString() === 'author-1' &&
           item.content === 'New comment' &&

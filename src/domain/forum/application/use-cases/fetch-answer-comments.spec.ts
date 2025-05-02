@@ -1,34 +1,34 @@
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
-import { InMemoryAnswerCommentRepository } from 'test/repositories/in-memory-answer-comments-repository'
+import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answer-comments-repository'
 import { expect } from 'vitest'
 
 import { UniqueEntityId } from '@/core/entities/value-object/unique-entity-id'
 
 import { FetchAnswerCommentsUseCase } from './fetch-answer-comments'
 
-let inMemoryAnswerCommentRepository: InMemoryAnswerCommentRepository
+let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
 let sut: FetchAnswerCommentsUseCase
 
 describe('Fetch answer comments', () => {
   beforeEach(async () => {
-    inMemoryAnswerCommentRepository = new InMemoryAnswerCommentRepository()
-    sut = new FetchAnswerCommentsUseCase(inMemoryAnswerCommentRepository)
+    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
+    sut = new FetchAnswerCommentsUseCase(inMemoryAnswerCommentsRepository)
   })
 
   it('should be able to fetch answer comments', async () => {
     const answerId = new UniqueEntityId('answer-1')
 
-    await inMemoryAnswerCommentRepository.create(
+    await inMemoryAnswerCommentsRepository.create(
       makeAnswerComment({
         answerId,
       }),
     )
-    await inMemoryAnswerCommentRepository.create(
+    await inMemoryAnswerCommentsRepository.create(
       makeAnswerComment({
         answerId,
       }),
     )
-    await inMemoryAnswerCommentRepository.create(
+    await inMemoryAnswerCommentsRepository.create(
       makeAnswerComment({
         answerId,
       }),
@@ -50,7 +50,7 @@ describe('Fetch answer comments', () => {
     const answerId = new UniqueEntityId('answer-1')
 
     for (let i = 0; i < 22; i++) {
-      await inMemoryAnswerCommentRepository.create(
+      await inMemoryAnswerCommentsRepository.create(
         makeAnswerComment({
           answerId,
         }),

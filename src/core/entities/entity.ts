@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { DomainEvent } from '../events/domain-event'
+import { DomainEvents } from '../events/domain-events'
 import { UniqueEntityId } from './value-object/unique-entity-id'
 
 export abstract class Entity<Props> {
+  private _domainEvents: DomainEvent[] = []
+
   private _id: UniqueEntityId
   protected props: Props
 
@@ -24,5 +28,18 @@ export abstract class Entity<Props> {
     }
 
     return false
+  }
+
+  get domainEvents() {
+    return this._domainEvents
+  }
+
+  protected addDomainEvent(domainEvent: DomainEvent): void {
+    this._domainEvents.push(domainEvent)
+    DomainEvents.markEntityForDispatch(this)
+  }
+
+  public clearEvents() {
+    this._domainEvents = []
   }
 }

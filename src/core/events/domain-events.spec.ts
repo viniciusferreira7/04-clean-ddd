@@ -12,7 +12,7 @@ class CustomAggregateCreated implements DomainEvent {
     this.occurredAt = new Date()
   }
 
-  public getAggregateId(): UniqueEntityId {
+  public getEntityId(): UniqueEntityId {
     return this.aggregate.id
   }
 }
@@ -41,7 +41,7 @@ describe('Domain events', () => {
     expect(aggregate.domainEvents).toHaveLength(1)
 
     // Entity was saved in database and event was dispatched
-    DomainEvents.dispatchEventsForAggregate(aggregate.id)
+    DomainEvents.dispatchEventsForEntity(aggregate.id)
 
     // The subscriber was listen the event and do do what needs to be done
     expect(callbackSpy).toBeCalled()

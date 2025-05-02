@@ -35,14 +35,14 @@ export class InMemoryAnswersRepository implements AnswersRepository {
 
     if (itemIndex >= 0) {
       this.items[itemIndex] = answer
-      DomainEvents.dispatchEventsForAggregate(answer.id)
+      DomainEvents.dispatchEventsForEntity(answer.id)
     }
   }
 
   async create(answer: Answer): Promise<void> {
     this.items.push(answer)
 
-    DomainEvents.dispatchEventsForAggregate(answer.id)
+    DomainEvents.dispatchEventsForEntity(answer.id)
   }
 
   async delete(answer: Answer): Promise<void> {
